@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import Input from "./Input";
 import ToDoItem from "./item/todoitem";
@@ -18,35 +18,55 @@ const AppWrapper = styled.div`
   color: #a194d6;
 `;
 
-const toDos = [];
+let toDos = [];
+
+try {
+  toDos = JSON.parse(localStorage.getItem("todo-list"));
+} catch {
+  localStorage.removeItem("todo-list");
+}
 
 function List() {
   const [data, setData] = useState(toDos);
+
+  // сохранить в localStorage
+
+  const changeList = useCallback((nextList) => {
+    setData(nextList);
+
+    localStorage.setItem("todo-list", JSON.stringify(nextList));
+  }, []);
 
   const changeToDo = (id, nextChecked) => {
     const next = data.map((item) =>
       item.id === id ? { ...item, isCompleted: nextChecked } : item
     );
 
-    setData(next);
+    changeList(next);
   };
 
   const deleteToDo = (id) => {
-    setData(data.filter((t) => t.id !== id));
+    changeList(data.filter((t) => t.id !== id));
   };
-
+  // if (data.length === 0) {
+  //   return "Дел нет. Пока что можно отдыхать 🧘‍♀️";
+  // }
   return (
     <AppWrapper>
       <h1>To Do List </h1>
-      <Input onCreate={(item) => setData(data.concat(item))} />
-      {data.map((todo) => (
-        <ToDoItem
-          key={todo.id}
-          todo={todo}
-          changeToDo={changeToDo}
-          deleteToDo={deleteToDo}
-        />
-      ))}
+      <Input onCreate={(item) => changeList(data.concat(item))} />
+      {data.length > 0 ? (
+        data.map((todo) => (
+          <ToDoItem
+            key={todo.id}
+            todo={todo}
+            changeToDo={changeToDo}
+            deleteToDo={deleteToDo}
+          />
+        ))
+      ) : (
+        <div>Дел нет. Пока что можно отдыхать 🧘‍♀️</div>
+      )}
     </AppWrapper>
   );
 }

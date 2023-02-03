@@ -39,10 +39,6 @@ function Input({ onCreate }) {
       if (e.keyCode === 13 && e.target.value.length !== 0) {
         onCreate({ id: Date.now(), title: value, isCompleted: false });
         setValue("");
-        localStorage.setItem(
-          JSON.stringify(Date.now()),
-          JSON.stringify({ id: Date.now(), title: value })
-        );
       }
     },
 
