@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
+import swal from "sweetalert";
 
 const StyledInput = styled.input`
   border: 1px;
@@ -20,12 +21,31 @@ function Input({ onCreate }) {
 
   const handleKeyDown = useCallback(
     (e) => {
+      if (e.keyCode === 13 && e.target.value.length === 0) {
+        return swal("Не забудь ввести задачу 🙃", {
+          buttons: "Ой,забыл:(",
+        });
+      }
+      if (e.keyCode === 13 && e.target.value.length > 50) {
+        swal({
+          title: "Ой!🥺",
+          text: "Кажется, задача слишком длинная \nПопробуй уложиться в 50 символов 🤗",
+          icon: "warning",
+          buttons: "Постараюсь",
+        });
+        return setValue("");
+      }
       // enter pressed
-      if (e.keyCode === 13) {
+      if (e.keyCode === 13 && e.target.value.length !== 0) {
         onCreate({ id: Date.now(), title: value, isCompleted: false });
         setValue("");
+        localStorage.setItem(
+          JSON.stringify(Date.now()),
+          JSON.stringify({ id: Date.now(), title: value })
+        );
       }
     },
+
     [value, onCreate]
   );
 

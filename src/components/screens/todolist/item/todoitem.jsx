@@ -32,12 +32,16 @@ function ToDoItem({ todo, changeToDo, deleteToDo }) {
 
         <span style={{ wordBreak: "break-all" }}>{todo.title}</span>
 
-        <StyledButton onClick={() => deleteToDo(todo.id)}>
+        <StyledButton
+          onClick={() => {
+            deleteToDo(todo.id);
+            localStorage.removeItem(todo.id);
+          }}
+        >
           <FcFullTrash />
         </StyledButton>
       </Wrapper>
     </>
   );
 }
-
 export default ToDoItem;

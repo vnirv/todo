@@ -18,7 +18,7 @@ const AppWrapper = styled.div`
   color: #a194d6;
 `;
 
-const toDos = [{ id: 0, title: "do todo List", isCompleted: false }];
+const toDos = [];
 
 function List() {
   const [data, setData] = useState(toDos);
