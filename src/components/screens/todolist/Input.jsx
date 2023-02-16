@@ -47,13 +47,12 @@ function Input({ onCreate }) {
 
   return (
     <div>
-      {" "}
       <StyledInput
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder="add toDo :)"
-      />{" "}
+      />
     </div>
   );
 }

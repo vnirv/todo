@@ -30,15 +30,6 @@ function List() {
   const dispatch = useDispatch();
   const { list, fetched, error } = useSelector((state) => state.todo);
 
-  const addTodo = (value) => {
-    const todo = {
-      id: Date.now(),
-      title: value,
-      isCompleted: false,
-    };
-    dispatch(addTodoAction(todo));
-  };
-
   const handleCreate = useCallback((item) => {
     dispatch(addTodoAction(item));
   }, []);

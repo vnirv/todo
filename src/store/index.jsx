@@ -15,7 +15,6 @@ export const store = createStore(
 store.subscribe(() => {
   const state = store.getState();
   if (!state.todo.error) {
-    console.log(state.todo);
     localStorage.setItem("todo-list", JSON.stringify(state.todo.list));
   }
 });

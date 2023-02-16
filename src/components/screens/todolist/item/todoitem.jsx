@@ -35,7 +35,6 @@ function ToDoItem({ todo, changeToDo, deleteToDo }) {
         <StyledButton
           onClick={() => {
             deleteToDo(todo.id);
-            localStorage.removeItem(todo.id);
           }}
         >
           <FcFullTrash />
