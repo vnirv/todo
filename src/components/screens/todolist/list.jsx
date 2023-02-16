@@ -1,7 +1,14 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
 import Input from "./Input";
 import ToDoItem from "./item/todoitem";
+import {
+  addTodoAction,
+  removeTodoAction,
+  updateTodo,
+  fetchList,
+} from "../../../store/todoReducer";
 
 const AppWrapper = styled.div`
   width: 100%;
@@ -18,55 +25,61 @@ const AppWrapper = styled.div`
   color: #a194d6;
 `;
 
-let toDos = [];
-
-try {
-  toDos = JSON.parse(localStorage.getItem("todo-list"));
-} catch {
-  localStorage.removeItem("todo-list");
-}
-
 function List() {
-  const [data, setData] = useState(toDos);
+  //
+  const dispatch = useDispatch();
+  const { list, fetched, error } = useSelector((state) => state.todo);
 
-  // сохранить в localStorage
+  const addTodo = (value) => {
+    const todo = {
+      id: Date.now(),
+      title: value,
+      isCompleted: false,
+    };
+    dispatch(addTodoAction(todo));
+  };
 
-  const changeList = useCallback((nextList) => {
-    setData(nextList);
-
-    localStorage.setItem("todo-list", JSON.stringify(nextList));
+  const handleCreate = useCallback((item) => {
+    dispatch(addTodoAction(item));
   }, []);
 
-  const changeToDo = (id, nextChecked) => {
-    const next = data.map((item) =>
-      item.id === id ? { ...item, isCompleted: nextChecked } : item
+  const handleClick = useCallback((id) => {
+    dispatch(removeTodoAction(id));
+  }, []);
+
+  const handleChangeItem = (id, nextChecked) => {
+    dispatch(updateTodo(id, nextChecked));
+  };
+
+  // сохранить в localStorage
+  useEffect(() => {
+    dispatch(fetchList());
+  }, []);
+
+  const getContent = () => {
+    if (error) {
+      return <div>Error!</div>;
+    }
+
+    return list.length > 0 ? (
+      list.map((todo) => (
+        <ToDoItem
+          key={todo.id}
+          todo={todo}
+          changeToDo={handleChangeItem}
+          deleteToDo={handleClick}
+        />
+      ))
+    ) : (
+      <div>Дел нет. Пока что можно отдыхать 🧘‍♀️</div>
     );
-
-    changeList(next);
   };
 
-  const deleteToDo = (id) => {
-    changeList(data.filter((t) => t.id !== id));
-  };
-  // if (data.length === 0) {
-  //   return "Дел нет. Пока что можно отдыхать 🧘‍♀️";
-  // }
   return (
     <AppWrapper>
       <h1>To Do List </h1>
-      <Input onCreate={(item) => changeList(data.concat(item))} />
-      {data.length > 0 ? (
-        data.map((todo) => (
-          <ToDoItem
-            key={todo.id}
-            todo={todo}
-            changeToDo={changeToDo}
-            deleteToDo={deleteToDo}
-          />
-        ))
-      ) : (
-        <div>Дел нет. Пока что можно отдыхать 🧘‍♀️</div>
-      )}
+      <Input onCreate={handleCreate} />
+      {!fetched ? <div>Loading...</div> : getContent()}
     </AppWrapper>
   );
 }

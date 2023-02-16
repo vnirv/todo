@@ -2,8 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import List from "./components/screens/todolist/list";
+import { Provider } from "react-redux";
+import { createGlobalStyle } from "styled-components";
+import { store } from "./store/index";
 
-import { createGlobalStyle, ThemeProvider } from "styled-components";
+// PersistGate - обертка для localSrorage на redux'е
 
 const Global = createGlobalStyle`
 *{
@@ -16,8 +19,8 @@ const Global = createGlobalStyle`
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <Global />
     <List />
-  </React.StrictMode>
+  </Provider>
 );
